@@ -1,0 +1,87 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "repro-tarfile"
+dynamic = ["version"]
+description = "A tiny, zero-dependency replacement for Python's tarfile.TarFile for creating reproducible/deterministic tar archives."
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = ["tarfile", "tar", "reproducible", "deterministic"]
+authors = [{ name = "DrivenData", email = "info@drivendata.org" }]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Archiving",
+  "Topic :: System :: Archiving :: Compression",
+  "Topic :: System :: Archiving :: Packaging",
+]
+dependencies = []
+
+[project.optional-dependencies]
+cli = ["repro-tarfile-cli"]
+tests = ["pytest>=6", "pytest-cases"]
+
+[project.urls]
+Documentation = "https://github.com/drivendataorg/repro-tarfile#readme"
+Issues = "https://github.com/drivendataorg/repro-tarfile/issues"
+Source = "https://github.com/drivendataorg/repro-tarfile"
+
+[tool.hatch.version]
+path = "repro_tarfile.py"
+
+## DEFAULT ENVIRONMENT ##
+
+[tool.hatch.envs.default]
+dependencies = ["black>=23.1.0", "mypy>=1.0.0", "ruff>=0.0.243"]
+python = "3.10"
+path = ".venv"
+
+[tool.hatch.envs.default.scripts]
+lint = ["black --check {args:.}", "ruff check {args:.}"]
+typecheck = ["mypy {args:repro_tarfile.py} --install-types --non-interactive"]
+
+## TESTS ENVIRONMENT ##
+
+[tool.hatch.envs.tests]
+features = ["tests"]
+dependencies = ["coverage>=6.5", "pytest-cov"]
+template = "tests"
+
+[[tool.hatch.envs.tests.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11"]
+
+[tool.hatch.envs.tests.scripts]
+test = "pytest {args:tests.py} -v --cov=repro_tarfile --cov-report=term --cov-report=html --cov-report=xml"
+
+## TOOLS ##
+
+[tool.black]
+line-length = 99
+
+[tool.ruff]
+line-length = 99
+select = [
+  "E", # Pyflakes
+  "F", # Pycodestyle
+  "I", # isort
+]
+src = ["repro_tarfile.py", "tests.py"]
+unfixable = ["F"]
+
+[tool.ruff.isort]
+known-first-party = ["repro_tarfile"]
+force-sort-within-sections = true
+
+[tool.coverage.run]
+source = ["repro_tarfile.py"]
