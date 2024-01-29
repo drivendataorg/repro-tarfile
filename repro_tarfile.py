@@ -104,7 +104,9 @@ def _temporarily_delete_tarfile_attr(tarinfo: tarfile.TarInfo):
         yield
     finally:
         if tarfile_attr is not _NO_TARFILE_ATTR:
-            tarinfo.tarfile = tarfile_attr
+            # mypy doesn't handle seninel objects
+            # https://github.com/python/mypy/issues/15788
+            tarinfo.tarfile = tarfile_attr  # type: ignore[assignment]
 
 
 class ReproducibleTarFile(tarfile.TarFile):
