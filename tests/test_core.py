@@ -1,7 +1,7 @@
 from io import StringIO
 import sys
-from time import sleep
 from tarfile import TarFile, TarInfo
+from time import sleep
 
 from repro_tarfile import ReproducibleTarFile
 from tests.utils import (

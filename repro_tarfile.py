@@ -7,15 +7,15 @@ from typing import IO, Optional
 __version__ = "0.1.0"
 
 
-def date_time() -> float:
+def date_time() -> int:
     """Returns date_time value used to force overwrite on all TarInfo objects. Defaults to
-    315550800.0 (corresponding to 1980-01-01 00:00:00 UTC). You can set this with the environment
-    variable SOURCE_DATE_EPOCH as an floating point number value representing seconds since Epoch.
+    315550800 (corresponding to 1980-01-01 00:00:00 UTC). You can set this with the environment
+    variable SOURCE_DATE_EPOCH as an integer value representing seconds since Epoch.
     """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
-        return float(source_date_epoch)
-    return datetime.datetime(1980, 1, 1, 0, 0, 0).timestamp()
+        return int(source_date_epoch)
+    return int(datetime.datetime(1980, 1, 1, 0, 0, 0).timestamp())
 
 
 def file_mode() -> int:
@@ -108,9 +108,7 @@ def _temporarily_delete_tarfile_attr(tarinfo: tarfile.TarInfo):
 
 
 class ReproducibleTarFile(tarfile.TarFile):
-    def addfile(
-        self, tarinfo: tarfile.TarInfo, fileobj: Optional[IO[bytes]] = None
-    ) -> None:
+    def addfile(self, tarinfo: tarfile.TarInfo, fileobj: Optional[IO[bytes]] = None) -> None:
         """Add the TarInfo object `tarinfo' to the archive. If `fileobj' is
         given, it should be a binary file, and tarinfo.size bytes are read
         from it and added to the archive. You can create TarInfo objects
