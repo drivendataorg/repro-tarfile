@@ -21,13 +21,14 @@ def rel_path(tmp_path):
     yield Path()
     os.chdir(orig_wd)
 
+
 # Minimum versions with extractall filter support. Don't test abs_path if we don't have it.
 EXTRACTALL_FILTER_MIN_VERSIONS = {
-    (3,8): (3, 8, 17),
-    (3,9): (3, 9, 17),
-    (3,10): (3, 10, 12),
-    (3,11): (3, 11, 4),
-    (3,12): (3, 12),
+    (3, 8): (3, 8, 17),
+    (3, 9): (3, 9, 17),
+    (3, 10): (3, 10, 12),
+    (3, 11): (3, 11, 4),
+    (3, 12): (3, 12),
 }
 if sys.version_info >= EXTRACTALL_FILTER_MIN_VERSIONS[sys.version_info[:2]]:
     base_path = fixture_union("base_path", ["rel_path", "abs_path"])
