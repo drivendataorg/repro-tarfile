@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import datetime
 import os
 import tarfile
@@ -122,15 +123,29 @@ class ReproducibleTarFile(tarfile.TarFile):
             mode = 0o100000 | file_mode()
         # See docstring for _temporarily_delete_tarfile_attr for why we need to do this.
         with _temporarily_delete_tarfile_attr(tarinfo):
-            tarinfo_copy = tarinfo.replace(
-                mtime=date_time(),
-                mode=mode,
-                uid=uid(),
-                gid=gid(),
-                uname=uname(),
-                gname=gname(),
-                deep=True,
-            )
+            try:
+                tarinfo_copy = tarinfo.replace(
+                    mtime=date_time(),
+                    mode=mode,
+                    uid=uid(),
+                    gid=gid(),
+                    uname=uname(),
+                    gname=gname(),
+                    deep=True,
+                )
+            except AttributeError as e:
+                # Some older versions of Python don't have replace method
+                # Added in: 3.8.17, 3.9.17, 3.10.12, 3.11.4, 3.12
+                if "'TarInfo' object has no attribute 'replace'" in str(e):
+                    tarinfo_copy = copy.deepcopy(tarinfo)
+                    tarinfo_copy.mtime = date_time()
+                    tarinfo_copy.mode = mode
+                    tarinfo_copy.uid = uid()
+                    tarinfo_copy.gid = gid()
+                    tarinfo_copy.uname = uname()
+                    tarinfo_copy.gname = gname()
+                else:
+                    raise
         return super().addfile(tarinfo=tarinfo_copy, fileobj=fileobj)
 
 
