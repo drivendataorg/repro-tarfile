@@ -1,4 +1,5 @@
 from io import StringIO
+import platform
 import sys
 from tarfile import TarFile, TarInfo
 from time import sleep
@@ -102,9 +103,9 @@ def test_add_dir_tree_mode(base_path):
 
     # ReproducibleTarFile hashes should match; TarFile hashes should not
     assert hash_file(rptf_arc1) == hash_file(rptf_arc2)
-    # if platform.system() != "Windows":
-    #     # Windows doesn't seem to actually make them different
-    assert hash_file(tf_arc1) != hash_file(tf_arc2)
+    if platform.system() != "Windows":
+        # Windows doesn't seem to actually make them different
+        assert hash_file(tf_arc1) != hash_file(tf_arc2)
 
 
 def test_add_dir_tree_string_paths(rel_path):
