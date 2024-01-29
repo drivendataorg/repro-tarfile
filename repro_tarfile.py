@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import datetime
 import os
 import tarfile
@@ -7,15 +8,15 @@ from typing import IO, Optional
 __version__ = "0.1.0"
 
 
-def date_time() -> float:
+def date_time() -> int:
     """Returns date_time value used to force overwrite on all TarInfo objects. Defaults to
-    315550800.0 (corresponding to 1980-01-01 00:00:00 UTC). You can set this with the environment
-    variable SOURCE_DATE_EPOCH as an floating point number value representing seconds since Epoch.
+    315550800 (corresponding to 1980-01-01 00:00:00 UTC). You can set this with the environment
+    variable SOURCE_DATE_EPOCH as an integer value representing seconds since Epoch.
     """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
-        return float(source_date_epoch)
-    return datetime.datetime(1980, 1, 1, 0, 0, 0).timestamp()
+        return int(source_date_epoch)
+    return int(datetime.datetime(1980, 1, 1, 0, 0, 0).timestamp())
 
 
 def file_mode() -> int:
@@ -104,13 +105,13 @@ def _temporarily_delete_tarfile_attr(tarinfo: tarfile.TarInfo):
         yield
     finally:
         if tarfile_attr is not _NO_TARFILE_ATTR:
-            tarinfo.tarfile = tarfile_attr
+            # mypy doesn't handle seninel objects
+            # https://github.com/python/mypy/issues/15788
+            tarinfo.tarfile = tarfile_attr  # type: ignore[assignment]
 
 
 class ReproducibleTarFile(tarfile.TarFile):
-    def addfile(
-        self, tarinfo: tarfile.TarInfo, fileobj: Optional[IO[bytes]] = None
-    ) -> None:
+    def addfile(self, tarinfo: tarfile.TarInfo, fileobj: Optional[IO[bytes]] = None) -> None:
         """Add the TarInfo object `tarinfo' to the archive. If `fileobj' is
         given, it should be a binary file, and tarinfo.size bytes are read
         from it and added to the archive. You can create TarInfo objects
@@ -122,15 +123,29 @@ class ReproducibleTarFile(tarfile.TarFile):
             mode = 0o100000 | file_mode()
         # See docstring for _temporarily_delete_tarfile_attr for why we need to do this.
         with _temporarily_delete_tarfile_attr(tarinfo):
-            tarinfo_copy = tarinfo.replace(
-                mtime=date_time(),
-                mode=mode,
-                uid=uid(),
-                gid=gid(),
-                uname=uname(),
-                gname=gname(),
-                deep=True,
-            )
+            try:
+                tarinfo_copy = tarinfo.replace(
+                    mtime=date_time(),
+                    mode=mode,
+                    uid=uid(),
+                    gid=gid(),
+                    uname=uname(),
+                    gname=gname(),
+                    deep=True,
+                )
+            except AttributeError as e:
+                # Some older versions of Python don't have replace method
+                # Added in: 3.8.17, 3.9.17, 3.10.12, 3.11.4, 3.12
+                if "'TarInfo' object has no attribute 'replace'" in str(e):
+                    tarinfo_copy = copy.deepcopy(tarinfo)
+                    tarinfo_copy.mtime = date_time()
+                    tarinfo_copy.mode = mode
+                    tarinfo_copy.uid = uid()
+                    tarinfo_copy.gid = gid()
+                    tarinfo_copy.uname = uname()
+                    tarinfo_copy.gname = gname()
+                else:
+                    raise
         return super().addfile(tarinfo=tarinfo_copy, fileobj=fileobj)
 
 

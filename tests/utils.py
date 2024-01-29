@@ -60,10 +60,16 @@ def hash_file(path: Path):
 
 def assert_archive_contents_equals(arc1: Path, arc2: Path):
     with TemporaryDirectory() as outdir1, TemporaryDirectory() as outdir2:
-        with TarFile.open(arc1, "r") as tp:
-            tp.extractall(outdir1, filter="tar")
-        with TarFile.open(arc2, "r") as tp:
-            tp.extractall(outdir2, filter="tar")
+        try:
+            with TarFile.open(arc1, "r") as tp:
+                tp.extractall(outdir1, filter="tar")
+            with TarFile.open(arc2, "r") as tp:
+                tp.extractall(outdir2, filter="tar")
+        except TypeError:
+            with TarFile.open(arc1, "r") as tp:
+                tp.extractall(outdir1)
+            with TarFile.open(arc2, "r") as tp:
+                tp.extractall(outdir2)
 
         extracted1 = sorted(Path(outdir1).glob("**/*"))
         extracted2 = sorted(Path(outdir2).glob("**/*"))

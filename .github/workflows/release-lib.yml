@@ -1,0 +1,51 @@
+name: release-lib
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Publish library release
+    runs-on: "ubuntu-latest"
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install hatch
+        run: |
+          pip install hatch
+
+      - name: Check that versions match
+        id: version
+        run: |
+          echo "Release tag: [${{ github.ref_name }}]"
+          PACKAGE_VERSION=$(hatch version)
+          echo "Package version: [$PACKAGE_VERSION]"
+          [ "${{ github.ref_name }}" == "v$PACKAGE_VERSION" ] || { exit 1; }
+          echo "major_minor_version=v${PACKAGE_VERSION%.*}" >> $GITHUB_OUTPUT
+
+      - name: Build package
+        run: |
+          hatch build
+
+      - name: Publish to Test PyPI
+        uses: pypa/gh-action-pypi-publish@v1.8.11
+        with:
+          user: ${{ secrets.PYPI_TEST_USERNAME }}
+          password: ${{ secrets.PYPI_TEST_PASSWORD }}
+          repository-url: https://test.pypi.org/legacy/
+          skip-existing: true
+
+      - name: Publish to Production PyPI
+        uses: pypa/gh-action-pypi-publish@v1.8.11
+        with:
+          user: ${{ secrets.PYPI_PROD_USERNAME }}
+          password: ${{ secrets.PYPI_PROD_PASSWORD }}
+          skip-existing: false
