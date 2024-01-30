@@ -257,6 +257,103 @@ def test_add_single_file_file_mode_env_var(rel_path, monkeypatch):
     assert mode == 0o600, (oct(mode), oct(0o600))
 
 
+def test_add_single_dir_dir_mode_env_var(rel_path, monkeypatch):
+    """REPRO_TARFILE_DIR_MODE environment variable works."""
+
+    with umask(0o002):
+        # Expect 775
+        dir_path = rel_path / data_factory()
+        dir_path.mkdir()
+
+    monkeypatch.setenv("REPRO_TARFILE_DIR_MODE", "700")  # rwx------
+
+    arc_path = rel_path / "archive.tar"
+    with ReproducibleTarFile.open(arc_path, "w") as tp:
+        tp.add(dir_path)
+
+    with TarFile.open(arc_path, "r") as tp:
+        print(tp.getmembers())
+        if sys.version_info >= (3, 9):
+            expected_name = dir_path.name + "/"
+        else:
+            expected_name = dir_path.name
+        mode = tp.getmember(expected_name).mode & 0o777
+
+    assert mode == 0o700, (oct(mode), oct(0o700))
+
+
+def test_add_single_file_uid_env_var(rel_path, monkeypatch):
+    """REPRO_TARFILE_UID environment variable works."""
+
+    data_file = file_factory(rel_path)
+
+    monkeypatch.setenv("REPRO_TARFILE_UID", "9999")
+
+    arc_path = rel_path / "archive.tar"
+    with ReproducibleTarFile.open(arc_path, "w") as tp:
+        tp.add(data_file)
+
+    with TarFile.open(arc_path, "r") as tp:
+        print(tp.getmembers())
+        uid = tp.getmember(data_file.name).uid
+
+    assert uid == 9999
+
+
+def test_add_single_file_gid_env_var(rel_path, monkeypatch):
+    """REPRO_TARFILE_GID environment variable works."""
+
+    data_file = file_factory(rel_path)
+
+    monkeypatch.setenv("REPRO_TARFILE_GID", "9999")
+
+    arc_path = rel_path / "archive.tar"
+    with ReproducibleTarFile.open(arc_path, "w") as tp:
+        tp.add(data_file)
+
+    with TarFile.open(arc_path, "r") as tp:
+        print(tp.getmembers())
+        gid = tp.getmember(data_file.name).gid
+
+    assert gid == 9999
+
+
+def test_add_single_file_uname_env_var(rel_path, monkeypatch):
+    """REPRO_TARFILE_UNAME environment variable works."""
+
+    data_file = file_factory(rel_path)
+
+    monkeypatch.setenv("REPRO_TARFILE_UNAME", "testuser123")
+
+    arc_path = rel_path / "archive.tar"
+    with ReproducibleTarFile.open(arc_path, "w") as tp:
+        tp.add(data_file)
+
+    with TarFile.open(arc_path, "r") as tp:
+        print(tp.getmembers())
+        uname = tp.getmember(data_file.name).uname
+
+    assert uname == "testuser123"
+
+
+def test_add_single_file_gname_env_var(rel_path, monkeypatch):
+    """REPRO_TARFILE_GNAME environment variable works."""
+
+    data_file = file_factory(rel_path)
+
+    monkeypatch.setenv("REPRO_TARFILE_GNAME", "testgroup123")
+
+    arc_path = rel_path / "archive.tar"
+    with ReproducibleTarFile.open(arc_path, "w") as tp:
+        tp.add(data_file)
+
+    with TarFile.open(arc_path, "r") as tp:
+        print(tp.getmembers())
+        gname = tp.getmember(data_file.name).gname
+
+    assert gname == "testgroup123"
+
+
 def test_add_single_file_string_paths(rel_path):
     """Writing the same file with different mtime produces the same hash, using string inputs
     instead of Path."""
@@ -324,31 +421,6 @@ def test_add_single_file_arcname(base_path):
     # ReproducibleTarFile hashes should match; TarFile hashes should not
     assert hash_file(rptf_arc1) == hash_file(rptf_arc2)
     assert hash_file(tf_arc1) != hash_file(tf_arc2)
-
-
-def test_add_single_dir_dir_mode_env_var(rel_path, monkeypatch):
-    """REPRO_TARFILE_DIR_MODE environment variable works."""
-
-    with umask(0o002):
-        # Expect 775
-        dir_path = rel_path / data_factory()
-        dir_path.mkdir()
-
-    monkeypatch.setenv("REPRO_TARFILE_DIR_MODE", "700")  # rwx------
-
-    arc_path = rel_path / "archive.tar"
-    with ReproducibleTarFile.open(arc_path, "w") as tp:
-        tp.add(dir_path)
-
-    with TarFile.open(arc_path, "r") as tp:
-        print(tp.getmembers())
-        if sys.version_info >= (3, 9):
-            expected_name = dir_path.name + "/"
-        else:
-            expected_name = dir_path.name
-        mode = tp.getmember(expected_name).mode & 0o777
-
-    assert mode == 0o700, (oct(mode), oct(0o700))
 
 
 def test_addfile(tmp_path):
