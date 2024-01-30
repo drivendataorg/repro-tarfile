@@ -7,7 +7,7 @@ from time import sleep
 try:
     from time import tzset
 except ImportError:
-    tzset is None
+    tzset = None
 
 import pytest
 
