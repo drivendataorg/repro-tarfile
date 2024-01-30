@@ -4,7 +4,14 @@ import sys
 from tarfile import TarFile, TarInfo
 from time import sleep
 
-from repro_tarfile import ReproducibleTarFile
+try:
+    from time import tzset
+except ImportError:
+    tzset is None
+
+import pytest
+
+from repro_tarfile import ReproducibleTarFile, date_time
 from tests.utils import (
     assert_archive_contents_equals,
     data_factory,
@@ -186,6 +193,18 @@ def test_add_single_file(base_path):
     assert hash_file(tf_arc1) != hash_file(tf_arc2)
 
 
+@pytest.mark.skipif(tzset is None, reason="tzset not available")
+def test_date_time_not_affected_by_timezone(monkeypatch):
+    monkeypatch.setenv("TZ", "America/Chicago")
+    tzset()
+    dt1 = date_time()
+    monkeypatch.setenv("TZ", "America/Los_Angeles")
+    tzset()
+    dt2 = date_time()
+
+    assert dt1 == dt2
+
+
 def test_add_single_file_source_date_epoch(base_path, monkeypatch):
     """Writing the same file with different mtime with SOURCE_DATE_EPOCH set produces the
     same hash."""
@@ -196,9 +215,8 @@ def test_add_single_file_source_date_epoch(base_path, monkeypatch):
     with ReproducibleTarFile.open(arc_base, "w") as tp:
         tp.add(data_file)
 
-    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1691732367")
-
     # With SOURCE_DATE_EPOCH set
+    monkeypatch.setenv("SOURCE_DATE_EPOCH", "1691732367")
     arc_sde1 = base_path / "with_sde1.tar"
     with ReproducibleTarFile.open(arc_sde1, "w") as tp:
         tp.add(data_file)

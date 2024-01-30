@@ -10,13 +10,13 @@ __version__ = "0.1.0"
 
 def date_time() -> int:
     """Returns date_time value used to force overwrite on all TarInfo objects. Defaults to
-    315550800 (corresponding to 1980-01-01 00:00:00 UTC). You can set this with the environment
+    315532800 (corresponding to 1980-01-01 00:00:00 UTC). You can set this with the environment
     variable SOURCE_DATE_EPOCH as an integer value representing seconds since Epoch.
     """
     source_date_epoch = os.environ.get("SOURCE_DATE_EPOCH", None)
     if source_date_epoch is not None:
         return int(source_date_epoch)
-    return int(datetime.datetime(1980, 1, 1, 0, 0, 0).timestamp())
+    return int(datetime.datetime(1980, 1, 1, 0, 0, 0, tzinfo=datetime.timezone.utc).timestamp())
 
 
 def file_mode() -> int:
