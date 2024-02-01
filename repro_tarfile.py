@@ -2,10 +2,16 @@ import contextlib
 import copy
 import datetime
 import os
-import tarfile
+from tarfile import TarFile, TarInfo
 from typing import IO, Optional
 
 __version__ = "0.1.0"
+
+__all__ = [
+    "open",
+    "ReproducibleTarFile",
+    "TarInfo",
+]
 
 
 def date_time() -> int:
@@ -87,7 +93,7 @@ _NO_TARFILE_ATTR = object()
 
 
 @contextlib.contextmanager
-def _temporarily_delete_tarfile_attr(tarinfo: tarfile.TarInfo):
+def _temporarily_delete_tarfile_attr(tarinfo: TarInfo):
     """Context manager for temporarily deleting the tarfile attribute from a TarInfo object.
 
     For some reason, TarInfo objects returned by TarFile.gettarinfo get assigned a 'tarfile'
@@ -110,8 +116,8 @@ def _temporarily_delete_tarfile_attr(tarinfo: tarfile.TarInfo):
             tarinfo.tarfile = tarfile_attr  # type: ignore[assignment]
 
 
-class ReproducibleTarFile(tarfile.TarFile):
-    def addfile(self, tarinfo: tarfile.TarInfo, fileobj: Optional[IO[bytes]] = None) -> None:
+class ReproducibleTarFile(TarFile):
+    def addfile(self, tarinfo: TarInfo, fileobj: Optional[IO[bytes]] = None) -> None:
         """Add the TarInfo object `tarinfo' to the archive. If `fileobj' is
         given, it should be a binary file, and tarinfo.size bytes are read
         from it and added to the archive. You can create TarInfo objects
