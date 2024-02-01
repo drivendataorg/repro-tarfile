@@ -240,6 +240,78 @@ def test_add_single_file_gz(base_path):
     assert hash_file(tf_arc1) != hash_file(tf_arc2)
 
 
+def test_add_single_file_bz2(base_path):
+    """Writing the same file with different mtime produces the same hash with bzip2 compression."""
+    data_file = file_factory(base_path)
+
+    rptf_arc1 = base_path / "rptf_arc1.tar.bz2"
+    with ReproducibleTarFile.open(rptf_arc1, "w:bz2") as tp:
+        tp.add(data_file)
+
+    tf_arc1 = base_path / "tf_arc1.tar.bz2"
+    with TarFile.open(tf_arc1, "w:bz2") as tp:
+        tp.add(data_file)
+
+    print(data_file.stat())
+    sleep(2)
+    data_file.touch()
+    print(data_file.stat())
+
+    rptf_arc2 = base_path / "rptf_arc2.tar.bz2"
+    with ReproducibleTarFile.open(rptf_arc2, "w:bz2") as tp:
+        tp.add(data_file)
+
+    tf_arc2 = base_path / "tf_arc2.tar.bz2"
+    with TarFile.open(tf_arc2, "w:bz2") as tp:
+        tp.add(data_file)
+
+    # All four archives should have identical content
+    assert_archive_contents_equals(rptf_arc1, tf_arc1)
+    assert_archive_contents_equals(rptf_arc1, rptf_arc2)
+    assert_archive_contents_equals(rptf_arc1, tf_arc2)
+
+    # ReproducibleTarFile hashes should match; TarFile hashes should not
+    assert hash_file(rptf_arc1) == hash_file(rptf_arc2)
+    assert hash_file(tf_arc1) != hash_file(tf_arc2)
+
+
+def test_add_single_file_xz(base_path):
+    """Writing the same file with different mtime produces the same hash with xz format /
+    LCMA2 compression.
+    """
+    data_file = file_factory(base_path)
+
+    rptf_arc1 = base_path / "rptf_arc1.tar.xz"
+    with ReproducibleTarFile.open(rptf_arc1, "w:xz") as tp:
+        tp.add(data_file)
+
+    tf_arc1 = base_path / "tf_arc1.tar.xz"
+    with TarFile.open(tf_arc1, "w:xz") as tp:
+        tp.add(data_file)
+
+    print(data_file.stat())
+    sleep(2)
+    data_file.touch()
+    print(data_file.stat())
+
+    rptf_arc2 = base_path / "rptf_arc2.tar.xz"
+    with ReproducibleTarFile.open(rptf_arc2, "w:xz") as tp:
+        tp.add(data_file)
+
+    tf_arc2 = base_path / "tf_arc2.tar.xz"
+    with TarFile.open(tf_arc2, "w:xz") as tp:
+        tp.add(data_file)
+
+    # All four archives should have identical content
+    assert_archive_contents_equals(rptf_arc1, tf_arc1)
+    assert_archive_contents_equals(rptf_arc1, rptf_arc2)
+    assert_archive_contents_equals(rptf_arc1, tf_arc2)
+
+    # ReproducibleTarFile hashes should match; TarFile hashes should not
+    assert hash_file(rptf_arc1) == hash_file(rptf_arc2)
+    assert hash_file(tf_arc1) != hash_file(tf_arc2)
+
+
 def test_add_single_file_source_date_epoch(base_path, monkeypatch):
     """Writing the same file with different mtime with SOURCE_DATE_EPOCH set produces the
     same hash."""
