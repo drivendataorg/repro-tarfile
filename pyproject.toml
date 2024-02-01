@@ -42,7 +42,7 @@ path = "repro_tarfile.py"
 ## DEFAULT ENVIRONMENT ##
 
 [tool.hatch.envs.default]
-dependencies = ["mypy>=1.0.0", "ruff>=0.1.14"]
+dependencies = ["ipython", "mypy>=1.0.0", "ruff>=0.1.14"]
 python = "3.10"
 path = ".venv"
 

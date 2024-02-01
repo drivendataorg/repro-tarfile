@@ -1,8 +1,9 @@
+import builtins
 import contextlib
 import copy
 import datetime
 import os
-from tarfile import TarFile, TarInfo
+from tarfile import CompressionError, ReadError, TarFile, TarInfo
 from typing import IO, Optional
 
 __version__ = "0.1.0"
@@ -117,6 +118,48 @@ def _temporarily_delete_tarfile_attr(tarinfo: TarInfo):
 
 
 class ReproducibleTarFile(TarFile):
+    # Following method modified from Python 3.12
+    # https://github.com/python/cpython/blob/09b8b14e05557304ab12870137181685c2dcbe25/Lib/tarfile.py#L1856-L1887
+    # Copyright Python Software Foundation, licensed under PSF License Version 2
+    # See LICENSE file for full license agreement and notice of copyright
+    @classmethod
+    def gzopen(cls, name, mode="r", fileobj=None, compresslevel=9, **kwargs):
+        """Open gzip compressed tar archive name for reading or writing.
+        Appending is not allowed.
+        """
+        if mode not in ("r", "w", "x"):
+            raise ValueError("mode must be 'r', 'w' or 'x'")
+
+        try:
+            from gzip import GzipFile
+        except ImportError:
+            raise CompressionError("gzip module is not available") from None
+
+        try:
+            ## repro-tarfile MODIFIED ##
+            # Overwrite filename and mtime when initializing GzipFile
+            if fileobj is None:
+                fileobj = builtins.open(name, mode + "b")
+            fileobj = GzipFile("", mode + "b", compresslevel, fileobj, mtime=date_time())
+            #########################
+        except OSError as e:
+            if fileobj is not None and mode == "r":
+                raise ReadError("not a gzip file") from e
+            raise
+
+        try:
+            t = cls.taropen(name, mode, fileobj, **kwargs)
+        except OSError as e:
+            fileobj.close()
+            if mode == "r":
+                raise ReadError("not a gzip file") from e
+            raise
+        except:
+            fileobj.close()
+            raise
+        t._extfileobj = False
+        return t
+
     def addfile(self, tarinfo: TarInfo, fileobj: Optional[IO[bytes]] = None) -> None:
         """Add the TarInfo object `tarinfo' to the archive. If `fileobj' is
         given, it should be a binary file, and tarinfo.size bytes are read
