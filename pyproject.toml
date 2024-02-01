@@ -29,6 +29,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+cli = ["rptar"]
 tests = ["pytest>=6,<8", "pytest-cases"]
 
 [project.urls]
@@ -42,18 +43,26 @@ path = "repro_tarfile.py"
 ## DEFAULT ENVIRONMENT ##
 
 [tool.hatch.envs.default]
+pre-install-commands = [
+  "pip install -e cli",
+]
+features = ["cli", "tests"]
 dependencies = ["ipython", "mypy>=1.0.0", "ruff>=0.1.14"]
 python = "3.10"
 path = ".venv"
 
 [tool.hatch.envs.default.scripts]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
-typecheck = ["mypy {args:repro_tarfile.py} --install-types --non-interactive"]
+typecheck = ["mypy {args:repro_tarfile.py cli} --install-types --non-interactive"]
 
 ## TESTS ENVIRONMENT ##
 
 [tool.hatch.envs.tests]
-features = ["tests"]
+pre-install-commands = [
+  "pip install -e .",
+  "pip install -e cli",
+]
+features = ["tests", "cli"]
 dependencies = ["coverage>=6.5", "pytest-cov"]
 template = "tests"
 
