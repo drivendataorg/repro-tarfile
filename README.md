@@ -10,15 +10,15 @@
 > [!IMPORTANT]
 > repro-tarfile is still a work-in-progress and not yet actually available for use
 
-**A tiny, zero-dependency replacement for Python's `tarfile` library for creating reproducible/deterministic tar archives.**
+**A tiny, zero-dependency replacement for Python's `tarfile` standard library for creating reproducible/deterministic tar archives.**
 
 "Reproducible" or "deterministic" in this context means that the binary content of the tar archive is identical if you add files with identical binary content in the same order. It means you can reliably check equality of the contents of two tar archives by simply comparing checksums of the archive using a hash function like MD5 or SHA-256.
 
-This Python package provides a `ReproducibleTarFile` class that works exactly like [`tarfile.TarFile`](https://docs.python.org/3/library/tarfile.html#tarfile-objects) from the Python standard library, except that certain file metadata are set to fixed values. See ["How does repro-tarfile work?"](#how-does-repro-tarfile-work) below for details.
+This Python package provides a `ReproducibleTarFile` class that works exactly like [`tarfile.TarFile`](https://docs.python.org/3/library/tarfile.html#tarfile-objects) from the Python standard library, except that certain archive metadata are set to fixed values. See ["How does repro-tarfile work?"](#how-does-repro-tarfile-work) below for details.
 
 You can also optionally install a command-line program, **rptar**. See ["rptar command line program"](#rptar-command-line-program) below for more information.
 
-_Looking to create reproducible/deterministic ZIP archives? Check out our sister package, [repro-zipfile](https://github.com/drivendataorg/repro-zipfile)!_
+_Looking instead to create reproducible/deterministic ZIP archives? Check out our sister package, [repro-zipfile](https://github.com/drivendataorg/repro-zipfile)!_
 
 ## Installation
 
@@ -55,7 +55,7 @@ For more advanced usage, such as customizing the fixed metadata values, see the 
 
 [![PyPI](https://img.shields.io/pypi/v/rptar.svg)](https://pypi.org/project/rptar/)
 
-You can optionally install a lightweight command-line program, **rptar**. This includes an additional dependency on the [typer](https://typer.tiangolo.com/) CLI framework. You can install it either directly or using the `cli` extra with repro-tarfile. We recommend you use [pipx](https://github.com/pypa/pipx) for Python CLIs in isolated environments.
+You can optionally install a lightweight command-line program, **rptar**. This includes an additional dependency on the [typer](https://typer.tiangolo.com/) CLI framework. You can install it either directly or using the `cli` extra with repro-tarfile. We recommend you use [pipx](https://github.com/pypa/pipx) for installing Python CLIs into isolated virtual environments.
 
 ```bash
 pipx install rptar
@@ -63,20 +63,22 @@ pipx install rptar
 pipx install repro-tarfile[cli]
 ```
 
+(You can install it with regular pip, too.)
+
 rptar is designed to a partial drop-in replacement ubiquitous [tar](https://linux.die.net/man/1/tar) program. Use `rptar --help` to see the documentation. Here are some usage examples:
 
 ```bash
-# Archive a single file
-rptar archive.zip examples/data.txt
-# Archive multiple files
-rptar archive.zip examples/data.txt README.md
-# Archive multiple files with a shell glob
-rptar archive.zip examples/*.py
-# Archive a directory recursively
-rptar -r archive.zip examples
+# Archive one file
+rptar -czvf archive.tar.gz some_file.txt
+# Archive two files
+rptar -czvf archive.tar.gz file1.txt file2.txt
+# Archive many files with glob
+rptar -czvf archive.tar.gz some_dir/*.txt
+# Archive directory recursively
+rptar -czvf archive.tar.gz some_dir/
 ```
 
-In addition to the fixed file metadata done by repro-tarfile, rptar will also always sort all paths being written.
+In addition to the fixed metadata values that repro-tarfile sets, rptar will also always sort all paths being archived.
 
 ## How does repro-tarfile work?
 
@@ -85,22 +87,33 @@ Tar archives are not normally reproducible even when containing files with ident
 1. Last-modified timestamps
 2. File-system permissions (mode)
 3. File owner user and group
+4. If using gzip compression, the uncompressed filename in the gzip header
 
-`repro_tarfile.ReproducibleTarFile` is a subclass of `tarfile.TarFile` that overrides the `addfile` method (which is also used interally by `add`) with a version that set the above metadata to fixed values. Note that repro-tarfile does not modify the original files—only the metadata written to the archive.
+`repro_tarfile.ReproducibleTarFile` is a subclass of `tarfile.TarFile` that overrides the `addfile` method (which is also used interally by `add`) with a version that set the above metadata to fixed values. Note that repro-tarfile does not modify the original files—it simply overrides the metadata written to the archive.
 
 You can effectively reproduce what `ReproducibleTarFile` does with something like this:
 
 ```python
-from tarfile import TarFile
+from gzip import GzipFile
+from pathlib import Path
+import tarfile
 
-with TarFile.open("archive.tar.gz", "w:gz") as tar:
-    # Use write to add a file to the archive
-    tar.add("examples/data.txt", arcname="data.txt")
-    tarinfo = tar.getmember("data.txt")
-
+with Path("archive.tar.gz").open("wb") as fp:
+    with GzipFile(filename="", fileobj=fp, mode="wb", mtime=315532800) as gz:
+        with tarfile.open(fileobj=gz, mode="w") as tar:
+            # Use write to add a file to the archive
+            tarinfo = tar.gettarinfo("examples/data.txt", arcname="data.txt")
+            tarinfo.mtime = 315532800
+            tarinfo.mode=0o644
+            tarinfo.uid=0
+            tarinfo.gid=0
+            tarinfo.uname=""
+            tarinfo.gname=""
+            with Path("examples/data.txt").open("rb") as fp2:
+                tar.addfile(tarinfo, fp2)
 ```
 
-It's not hard to do, but we believe `ReproducibleTarFile` is sufficiently more convenient to justify a small package!
+It's kind of a pain! We believe repro-tarfile is sufficiently more convenient to justify a small package.
 
 See the next two sections for more details about the replacement metadata values and how to customize them.
 
