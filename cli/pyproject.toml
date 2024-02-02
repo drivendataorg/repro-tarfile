@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "rptar"
 dynamic = ["version"]
-description = "A lightweight command-line program for creating reproducible/deterministic ZIP archives."
+description = "A lightweight command-line program for creating reproducible/deterministic tar archives."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT License" }
