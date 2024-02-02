@@ -1,3 +1,4 @@
+import platform
 import subprocess
 import sys
 
@@ -66,6 +67,7 @@ def test_tar_single_file_bz2(base_path):
     assert_archive_contents_equals(rptar_out, tar_out)
 
 
+@pytest.mark.skipif(platform.system() == "Windows", reason="xz not available on Windows")
 def test_tar_single_file_xz(base_path):
     data_file = file_factory(base_path)
 
