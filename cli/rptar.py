@@ -5,9 +5,9 @@ from pathlib import Path
 import sys
 from typing import List, Optional
 
-try:
+if sys.version_info >= (3, 9):
     from typing import Annotated
-except ImportError:
+else:
     from typing_extensions import Annotated
 
 import typer
