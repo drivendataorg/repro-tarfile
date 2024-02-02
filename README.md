@@ -7,9 +7,6 @@
 [![tests](https://github.com/drivendataorg/repro-tarfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-tarfile/actions/workflows/tests.yml?query=branch%3Amain)
 [![codecov](https://codecov.io/gh/drivendataorg/repro-tarfile/branch/main/graph/badge.svg)](https://codecov.io/gh/drivendataorg/repro-tarfile)
 
-> [!IMPORTANT]
-> repro-tarfile is still a work-in-progress and not yet actually available for use
-
 **A tiny, zero-dependency replacement for Python's `tarfile` standard library for creating reproducible/deterministic tar archives.**
 
 "Reproducible" or "deterministic" in this context means that the binary content of the tar archive is identical if you add files with identical binary content in the same order. It means you can reliably check equality of the contents of two tar archives by simply comparing checksums of the archive using a hash function like MD5 or SHA-256.
@@ -90,7 +87,7 @@ Tar archives are not normally reproducible even when containing files with ident
 
 `repro_tarfile.ReproducibleTarFile` is a subclass of `tarfile.TarFile` that overrides the `addfile` method (which is also used interally by `add`) with a version that set the above file metadata to fixed values. It also overrides the `gzopen` method used for gzip compression to override the gzip header values. Note that repro-tarfile does not modify the original files—it simply overrides the metadata written to the archive.
 
-You can effectively reproduce what `ReproducibleTarFile` does with something like this:
+You can effectively reproduce what repro-tarfile does in a `.tar.gz` case with something like this:
 
 ```python
 from gzip import GzipFile
