@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "repro-tarfile"
 dynamic = ["version"]
-description = "A tiny, zero-dependency replacement for Python's tarfile.TarFile for creating reproducible/deterministic tar archives."
+description = "A tiny, zero-dependency replacement for Python's tarfile standard library for creating reproducible/deterministic tar archives."
 readme = "README.md"
 requires-python = ">=3.8"
 license = { file = "LICENSE" }
