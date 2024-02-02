@@ -15,8 +15,8 @@ __all__ = [
 ]
 
 
-def date_time() -> int:
-    """Returns date_time value used to force overwrite on all TarInfo objects. Defaults to
+def mtime() -> int:
+    """Returns mtime value used to force overwrite on all TarInfo objects. Defaults to
     315532800 (corresponding to 1980-01-01 00:00:00 UTC). You can set this with the environment
     variable SOURCE_DATE_EPOCH as an integer value representing seconds since Epoch.
     """
@@ -140,7 +140,7 @@ class ReproducibleTarFile(TarFile):
             # Overwrite filename and mtime when initializing GzipFile
             if fileobj is None:
                 fileobj = builtins.open(name, mode + "b")
-            fileobj = GzipFile("", mode + "b", compresslevel, fileobj, mtime=date_time())
+            fileobj = GzipFile("", mode + "b", compresslevel, fileobj, mtime=mtime())
             #########################
         except OSError as e:
             if fileobj is not None and mode == "r":
@@ -174,7 +174,7 @@ class ReproducibleTarFile(TarFile):
         with _temporarily_delete_tarfile_attr(tarinfo):
             try:
                 tarinfo_copy = tarinfo.replace(
-                    mtime=date_time(),
+                    mtime=mtime(),
                     mode=mode,
                     uid=uid(),
                     gid=gid(),
@@ -187,7 +187,7 @@ class ReproducibleTarFile(TarFile):
                 # Added in: 3.8.17, 3.9.17, 3.10.12, 3.11.4, 3.12
                 if "'TarInfo' object has no attribute 'replace'" in str(e):
                     tarinfo_copy = copy.deepcopy(tarinfo)
-                    tarinfo_copy.mtime = date_time()
+                    tarinfo_copy.mtime = mtime()
                     tarinfo_copy.mode = mode
                     tarinfo_copy.uid = uid()
                     tarinfo_copy.gid = gid()
