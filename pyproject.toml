@@ -75,15 +75,17 @@ test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-repor
 
 [tool.ruff]
 line-length = 99
+src = ["*.py", "cli/*.py", "tests/*.py"]
+
+[tool.ruff.lint]
 select = [
   "E", # Pyflakes
   "F", # Pycodestyle
   "I", # isort
 ]
-src = ["*.py", "cli/*.py", "tests/*.py"]
 unfixable = ["F"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["repro_tarfile", "rptar"]
 force-sort-within-sections = true
 

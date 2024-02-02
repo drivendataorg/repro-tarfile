@@ -126,12 +126,12 @@ def rptar(
                 logger.info("adding: %s", path)
                 tar.add(path)
     else:
-        with BytesIO() as out:
-            with repro_tarfile.open(fileobj=out, mode=write_mode) as tar:
+        with BytesIO() as stream:
+            with repro_tarfile.open(fileobj=stream, mode=write_mode) as tar:
                 for path in sorted(in_paths):
                     logger.info("adding: %s", path)
                     tar.add(path)
-            sys.stdout.buffer.write(out.getvalue())
+            sys.stdout.buffer.write(stream.getvalue())
 
 
 if __name__ == "__main__":
