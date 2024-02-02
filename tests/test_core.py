@@ -11,7 +11,7 @@ except ImportError:
 
 import pytest
 
-from repro_tarfile import ReproducibleTarFile, date_time
+from repro_tarfile import ReproducibleTarFile, mtime
 from tests.utils import (
     assert_archive_contents_equals,
     data_factory,
@@ -194,13 +194,13 @@ def test_add_single_file(base_path):
 
 
 @pytest.mark.skipif(tzset is None, reason="tzset not available")
-def test_date_time_not_affected_by_timezone(monkeypatch):
+def test_mtime_not_affected_by_timezone(monkeypatch):
     monkeypatch.setenv("TZ", "America/Chicago")
     tzset()
-    dt1 = date_time()
+    dt1 = mtime()
     monkeypatch.setenv("TZ", "America/Los_Angeles")
     tzset()
-    dt2 = date_time()
+    dt2 = mtime()
 
     assert dt1 == dt2
 
