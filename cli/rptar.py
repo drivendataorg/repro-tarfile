@@ -67,16 +67,16 @@ def rptar(
         ),
     ] = None,
 ):
-    """A lightweight replacement for zip for most simple cases. Use it to compress and package
-    files in ZIP archives, but reproducibly/deterministicly.
+    """A lightweight replacement for `tar -c` for creating tar archives, but reproducibly/
+    deterministicly. It supports a subset of common options matching tar.
 
     Example commands:
 
     \b
-      rpzip archive.zip some_file.txt        # Archive one file
-      rpzip archive.zip file1.txt file2.txt  # Archive two files
-      rpzip archive.zip some_dir/*.txt       # Archive with glob
-      rpzip -r archive.zip some_dir/         # Archive directory recursively
+      rptar -czvf archive.tar.gz some_file.txt        # Archive one file
+      rptar -czvf archive.tar.gz file1.txt file2.txt  # Archive two files
+      rptar -czvf archive.tar.gz some_dir/*.txt       # Archive many files with glob
+      rptar -czvf archive.tar.gz some_dir/            # Archive directory recursively
     """
     # Set up logger
     log_level = logging.WARNING - 10 * verbose
@@ -125,14 +125,12 @@ def rptar(
             for path in sorted(in_paths):
                 logger.info("adding: %s", path)
                 tar.add(path)
-                logger.debug(tar.pax_headers)
     else:
         with BytesIO() as out:
             with repro_tarfile.open(fileobj=out, mode=write_mode) as tar:
                 for path in sorted(in_paths):
                     logger.info("adding: %s", path)
                     tar.add(path)
-                logger.debug(tar.pax_headers)
             sys.stdout.buffer.write(out.getvalue())
 
 
