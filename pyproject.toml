@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A tiny, zero-dependency replacement for Python's tarfile.TarFile for creating reproducible/deterministic tar archives."
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = { file = "LICENSE" }
 keywords = ["tarfile", "tar", "reproducible", "deterministic"]
 authors = [{ name = "DrivenData", email = "info@drivendata.org" }]
 classifiers = [
@@ -29,6 +29,7 @@ classifiers = [
 dependencies = []
 
 [project.optional-dependencies]
+cli = ["rptar"]
 tests = ["pytest>=6,<8", "pytest-cases"]
 
 [project.urls]
@@ -42,17 +43,24 @@ path = "repro_tarfile.py"
 ## DEFAULT ENVIRONMENT ##
 
 [tool.hatch.envs.default]
+pre-install-commands = [
+  "pip install -e . -e cli",
+]
+features = ["cli", "tests"]
 dependencies = ["ipython", "mypy>=1.0.0", "ruff>=0.1.14"]
 python = "3.10"
 path = ".venv"
 
 [tool.hatch.envs.default.scripts]
 lint = ["ruff format --check {args:.}", "ruff check {args:.}"]
-typecheck = ["mypy {args:repro_tarfile.py} --install-types --non-interactive"]
+typecheck = ["mypy {args:repro_tarfile.py cli} --install-types --non-interactive"]
 
 ## TESTS ENVIRONMENT ##
 
 [tool.hatch.envs.tests]
+pre-install-commands = [
+  "pip install -e . -e cli",
+]
 features = ["tests"]
 dependencies = ["coverage>=6.5", "pytest-cov"]
 template = "tests"
@@ -67,15 +75,17 @@ test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-repor
 
 [tool.ruff]
 line-length = 99
+src = ["*.py", "cli/*.py", "tests/*.py"]
+
+[tool.ruff.lint]
 select = [
   "E", # Pyflakes
   "F", # Pycodestyle
   "I", # isort
 ]
-src = ["*.py", "cli/*.py", "tests/*.py"]
 unfixable = ["F"]
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 known-first-party = ["repro_tarfile", "rptar"]
 force-sort-within-sections = true
 
