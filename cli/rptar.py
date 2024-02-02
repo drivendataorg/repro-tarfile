@@ -111,7 +111,7 @@ def rptar(
     except StopIteration:
         write_mode = "w"
 
-    # Process inputs
+    # Process inputs, manually recurse for logging
     in_paths = set(Path(p) for p in in_list)
     if recursion:
         for path in frozenset(in_paths):
@@ -124,13 +124,13 @@ def rptar(
         with repro_tarfile.open(out, write_mode) as tar:
             for path in sorted(in_paths):
                 logger.info("adding: %s", path)
-                tar.add(path)
+                tar.add(path, recursive=False)
     else:
         with BytesIO() as stream:
             with repro_tarfile.open(fileobj=stream, mode=write_mode) as tar:
                 for path in sorted(in_paths):
                     logger.info("adding: %s", path)
-                    tar.add(path)
+                    tar.add(path, recursive=False)
             sys.stdout.buffer.write(stream.getvalue())
 
 

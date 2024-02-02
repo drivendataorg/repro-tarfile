@@ -8,7 +8,7 @@ dynamic = ["version"]
 description = "A tiny, zero-dependency replacement for Python's tarfile.TarFile for creating reproducible/deterministic tar archives."
 readme = "README.md"
 requires-python = ">=3.8"
-license = "MIT"
+license = { file = "LICENSE" }
 keywords = ["tarfile", "tar", "reproducible", "deterministic"]
 authors = [{ name = "DrivenData", email = "info@drivendata.org" }]
 classifiers = [
