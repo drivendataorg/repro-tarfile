@@ -1,5 +1,4 @@
-"""Basic usage example of repro_tarfile.
-"""
+"""Basic usage example of repro_tarfile."""
 
 from io import StringIO
 from pathlib import Path
