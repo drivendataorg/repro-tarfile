@@ -2,8 +2,8 @@
 library module tarfile's nonreproducible output.
 """
 
-from io import BytesIO
 import hashlib
+from io import BytesIO
 from pathlib import Path
 import tarfile
 from tempfile import TemporaryDirectory
