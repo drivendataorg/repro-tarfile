@@ -28,9 +28,10 @@ EXTRACTALL_FILTER_MIN_VERSIONS = {
     (3, 9): (3, 9, 17),
     (3, 10): (3, 10, 12),
     (3, 11): (3, 11, 4),
-    (3, 12): (3, 12),
 }
-if sys.version_info >= EXTRACTALL_FILTER_MIN_VERSIONS[sys.version_info[:2]]:
+if sys.version_info >= EXTRACTALL_FILTER_MIN_VERSIONS.get(
+    sys.version_info[:2], sys.version_info[:2]
+):
     base_path = fixture_union("base_path", ["rel_path", "abs_path"])
 else:
     base_path = fixture_union("base_path", ["rel_path"])
