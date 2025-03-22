@@ -4,7 +4,6 @@ import copy
 import datetime
 import os
 from tarfile import CompressionError, ReadError, TarFile, TarInfo
-from typing import IO, Optional
 
 __version__ = "0.1.0"
 
