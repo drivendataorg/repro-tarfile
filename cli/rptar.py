@@ -1,3 +1,4 @@
+from importlib.metadata import version
 from io import BytesIO
 import itertools
 import logging
@@ -14,7 +15,7 @@ import typer
 
 import repro_tarfile
 
-__version__ = "0.1.1"
+__version__ = version("rptar")
 
 app = typer.Typer()
 
@@ -25,7 +26,7 @@ logger.addHandler(logging.NullHandler())
 
 def version_callback(value: bool):
     if value:
-        print(f"repro-tarfile v{repro_tarfile.__version__}")  # type: ignore[attr-defined]
+        print(f"repro-tarfile v{version('repro-tarfile')}")
         print(f"rptar v{__version__}")
         raise typer.Exit()
 
