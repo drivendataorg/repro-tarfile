@@ -104,16 +104,26 @@ def _temporarily_delete_tarfile_attr(tarinfo: TarInfo):
     The TarInfo can have IO streams that prevent deepcopy. This context manager temporarily deletes
     the tarfile attribute so that we can do a deepcopy successfully.
     """
-    tarfile_attr = getattr(tarinfo, "tarfile", _NO_TARFILE_ATTR)
-    if tarfile_attr is not _NO_TARFILE_ATTR:
-        delattr(tarinfo, "tarfile")
+    # TarInfo.tarfile is a property in Python 3.13+
+    tarfile_attr_is_property = isinstance(getattr(type(tarinfo), "tarfile"), property)
+    if not tarfile_attr_is_property:
+        tarfile_attr = getattr(tarinfo, "tarfile", _NO_TARFILE_ATTR)
+        if tarfile_attr is not _NO_TARFILE_ATTR and not tarfile_attr_is_property:
+            delattr(tarinfo, "tarfile")
+    # Python 3.13+ uses _tarfile instead
+    under_tarfile_attr = getattr(tarinfo, "_tarfile", _NO_TARFILE_ATTR)
+    if under_tarfile_attr is not _NO_TARFILE_ATTR:
+        delattr(tarinfo, "_tarfile")
     try:
         yield
     finally:
-        if tarfile_attr is not _NO_TARFILE_ATTR:
+        # Restore the stuff we deleted
+        if not tarfile_attr_is_property and tarfile_attr is not _NO_TARFILE_ATTR:
             # mypy doesn't handle seninel objects
             # https://github.com/python/mypy/issues/15788
             tarinfo.tarfile = tarfile_attr  # type: ignore[assignment]
+        if under_tarfile_attr is not _NO_TARFILE_ATTR:
+            tarinfo._tarfile = under_tarfile_attr  # type: ignore[attr-defined]
 
 
 class ReproducibleTarFile(TarFile):
