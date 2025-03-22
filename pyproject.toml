@@ -19,7 +19,6 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
   "Topic :: System :: Archiving",
   "Topic :: System :: Archiving :: Compression",
   "Topic :: System :: Archiving :: Packaging",
@@ -28,7 +27,6 @@ dependencies = []
 
 [project.optional-dependencies]
 cli = ["rptar"]
-tests = ["pytest>=6,<8", "pytest-cases"]
 
 [project.urls]
 Documentation = "https://github.com/drivendataorg/repro-tarfile#readme"
@@ -42,37 +40,33 @@ build-backend = "hatchling.build"
 [tool.hatch.version]
 path = "repro_tarfile.py"
 
-## DEFAULT ENVIRONMENT ##
+## DEV ##
 
-[tool.hatch.envs.default]
-installer = "uv"
-pre-install-commands = ["uv pip install -e . -e cli"]
-features = ["cli", "tests"]
-dependencies = ["ipython", "mypy>=1.0.0", "ruff>=0.1.14", "vspect"]
-python = "3.10"
-path = ".venv"
+[tool.uv.sources]
+rptar = { workspace = true }
 
-[tool.hatch.envs.default.scripts]
-lint = [
-  "ruff format --check {args:.}",
-  "ruff check {args:.}",
+[tool.uv.workspace]
+members = ["cli/"]
+
+[dependency-groups]
+dev = [
+  "ipython",
+  "vspect",
+  { include-group = "lint" },
+  { include-group = "test" },
 ]
-typecheck = ["mypy {args:repro_tarfile.py cli} --install-types --non-interactive"]
-
-## TESTS ENVIRONMENT ##
-
-[tool.hatch.envs.tests]
-installer = "uv"
-pre-install-commands = ["uv pip install -e . -e cli"]
-features = ["tests"]
-dependencies = ["coverage>=6.5", "pytest-cov"]
-template = "tests"
-
-[[tool.hatch.envs.tests.matrix]]
-python = ["3.8", "3.9", "3.10", "3.11.3", "3.11", "3.12", "3.13"]
-
-[tool.hatch.envs.tests.scripts]
-test = "pytest {args:tests} -v --cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
+lint = [
+  "ruff>=0.1.14",
+]
+test = [
+  "coverage>=6.5",
+  "pytest>=6,<8",
+  "pytest-cases",
+  "pytest-cov",
+]
+typecheck = [
+  "mypy>=1.0.0",
+]
 
 ## TOOLS ##
 
@@ -92,5 +86,18 @@ unfixable = ["F"]
 known-first-party = ["repro_tarfile", "rptar"]
 force-sort-within-sections = true
 
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
+testpaths = ["tests"]
+
 [tool.coverage.run]
-omit = ["tests/*"]
+source_pkgs = ["repro_tarfile", "rptar"]
+
+[tool.coverage.paths]
+source = [
+  "repro_tarfile.py",
+  "*/site-packages/repro_tarfile/",
+  "cli/",
+  "*/site-packages/rptar/",
+]
