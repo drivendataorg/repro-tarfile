@@ -725,8 +725,6 @@ dev = [
     { name = "ipython", version = "8.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.9.*'" },
     { name = "ipython", version = "8.34.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version == '3.10.*'" },
     { name = "ipython", version = "9.0.2", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.11'" },
-    { name = "mypy", version = "1.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "mypy", version = "1.15.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "pytest" },
     { name = "pytest-cases" },
     { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
@@ -735,8 +733,6 @@ dev = [
     { name = "vspect" },
 ]
 lint = [
-    { name = "mypy", version = "1.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
-    { name = "mypy", version = "1.15.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
     { name = "ruff" },
 ]
 test = [
@@ -747,6 +743,10 @@ test = [
     { name = "pytest-cov", version = "5.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
     { name = "pytest-cov", version = "6.0.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
 ]
+typecheck = [
+    { name = "mypy", version = "1.14.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.9'" },
+    { name = "mypy", version = "1.15.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.9'" },
+]
 
 [package.metadata]
 requires-dist = [{ name = "rptar", marker = "extra == 'cli'", editable = "cli" }]
@@ -756,23 +756,20 @@ provides-extras = ["cli"]
 dev = [
     { name = "coverage", specifier = ">=6.5" },
     { name = "ipython" },
-    { name = "mypy", specifier = ">=1.0.0" },
     { name = "pytest", specifier = ">=6,<8" },
     { name = "pytest-cases" },
     { name = "pytest-cov" },
     { name = "ruff", specifier = ">=0.1.14" },
     { name = "vspect" },
 ]
-lint = [
-    { name = "mypy", specifier = ">=1.0.0" },
-    { name = "ruff", specifier = ">=0.1.14" },
-]
+lint = [{ name = "ruff", specifier = ">=0.1.14" }]
 test = [
     { name = "coverage", specifier = ">=6.5" },
     { name = "pytest", specifier = ">=6,<8" },
     { name = "pytest-cases" },
     { name = "pytest-cov" },
 ]
+typecheck = [{ name = "mypy", specifier = ">=1.0.0" }]
 
 [[package]]
 name = "rich"
