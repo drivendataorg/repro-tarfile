@@ -30,7 +30,7 @@ jobs:
 
       - name: Typecheck package
         run: |
-          uv run --group typecheck just typecheck
+          uv run --group typecheck --all-extras just typecheck
 
   tests:
     name: "Tests (${{ matrix.os }}, Python ${{ matrix.python-version }})"
