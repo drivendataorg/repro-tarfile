@@ -88,16 +88,17 @@ force-sort-within-sections = true
 
 [tool.pytest.ini_options]
 minversion = "6.0"
-addopts = "--cov=. --cov=./cli --cov-report=term --cov-report=html --cov-report=xml"
+addopts = "--cov=repro_tarfile --cov=rptar --cov-report=term --cov-report=html --cov-report=xml"
 testpaths = ["tests"]
 
 [tool.coverage.run]
-source_pkgs = ["repro_tarfile", "rptar"]
+source = ["."]
+omit = ["tests/*"]
 
 [tool.coverage.paths]
 source = [
   "repro_tarfile.py",
-  "*/site-packages/repro_tarfile/",
-  "cli/",
-  "*/site-packages/rptar/",
+  "*/site-packages/repro_tarfile.py",
+  "cli/rptar.py",
+  "*/site-packages/rptar.py",
 ]
