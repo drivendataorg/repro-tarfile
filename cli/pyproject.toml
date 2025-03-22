@@ -37,3 +37,8 @@ Source = "https://github.com/drivendataorg/repro-tarfile/tree/main/cli"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+  "vspect",
+]
