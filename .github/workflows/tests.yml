@@ -57,7 +57,7 @@ jobs:
 
       - name: Run tests
         run: |
-          just python=${{ matrix.python-version }} test
+          just python=${{ matrix.python-version }} test -vv
 
       - name: Upload coverage to codecov
         uses: codecov/codecov-action@v5
