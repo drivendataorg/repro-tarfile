@@ -1,9 +1,11 @@
-name: release-lib
+name: Release Library
 
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version tag (e.g., 'v1.0.0')"
+        required: true
 
 jobs:
   build:
@@ -13,30 +15,33 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
         with:
-          python-version: "3.10"
+          enable-cache: true
+          cache-dependency-glob: |
+            pyproject.toml
 
       - name: Install hatch
         run: |
-          pip install hatch
+          uv tool install hatch
+
+      - name: Install dependencies
+        run: |
+          hatch env create
 
       - name: Check that versions match
-        id: version
         run: |
-          echo "Release tag: [${{ github.ref_name }}]"
-          PACKAGE_VERSION=$(hatch version)
+          echo "Input version tag: [${{ github.event.inputs.version }}] "
+          PACKAGE_VERSION=$(hatch run vspect package repro-tarfile)
           echo "Package version: [$PACKAGE_VERSION]"
-          [ "${{ github.ref_name }}" == "v$PACKAGE_VERSION" ] || { exit 1; }
-          echo "major_minor_version=v${PACKAGE_VERSION%.*}" >> $GITHUB_OUTPUT
+          [[ "${{ github.event.inputs.version }}" == "v$PACKAGE_VERSION" ]] || { exit 1; }
 
       - name: Build package
         run: |
           hatch build
 
       - name: Publish to Test PyPI
-        uses: pypa/gh-action-pypi-publish@v1.8.11
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           user: ${{ secrets.PYPI_TEST_USERNAME }}
           password: ${{ secrets.PYPI_TEST_PASSWORD }}
@@ -44,8 +49,28 @@ jobs:
           skip-existing: true
 
       - name: Publish to Production PyPI
-        uses: pypa/gh-action-pypi-publish@v1.8.11
+        uses: pypa/gh-action-pypi-publish@v1.12.4
         with:
           user: ${{ secrets.PYPI_PROD_USERNAME }}
           password: ${{ secrets.PYPI_PROD_PASSWORD }}
           skip-existing: false
+
+      - id: extract-changelog
+        uses: sean0x42/markdown-extract@v2.1.0
+        with:
+          file: CHANGELOG.md
+          pattern: ${{ github.event.inputs.version }}
+
+      - name: Write output to file
+        run: |
+          cat <<'__EOF__' > __CHANGELOG-extracted.md
+          ${{ steps.extract-changelog.outputs.markdown }}
+          __EOF__
+
+      - uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.event.inputs.version }}
+          name: "repro-tarfile ${{ github.event.inputs.version }}"
+          commit: main
+          artifacts: "dist/*.whl,dist/*.tar.gz"
+          bodyFile: "__CHANGELOG-extracted.md"
