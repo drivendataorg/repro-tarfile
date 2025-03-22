@@ -66,6 +66,7 @@ test = [
 ]
 typecheck = [
   "mypy>=1.0.0",
+  "pip",
 ]
 
 ## TOOLS ##
