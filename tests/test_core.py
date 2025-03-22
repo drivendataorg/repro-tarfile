@@ -1,6 +1,5 @@
 from io import StringIO
 import platform
-import sys
 from tarfile import TarFile, TarInfo
 from time import sleep
 
@@ -380,11 +379,12 @@ def test_add_single_dir_dir_mode_env_var(rel_path, monkeypatch):
 
     with TarFile.open(arc_path, "r") as tp:
         print(tp.getmembers())
-        if sys.version_info >= (3, 9):
+        try:
             expected_name = dir_path.name + "/"
-        else:
+            mode = tp.getmember(expected_name).mode & 0o777
+        except KeyError:
             expected_name = dir_path.name
-        mode = tp.getmember(expected_name).mode & 0o777
+            mode = tp.getmember(expected_name).mode & 0o777
 
     assert mode == 0o700, (oct(mode), oct(0o700))
 

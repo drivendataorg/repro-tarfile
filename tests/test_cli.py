@@ -8,7 +8,12 @@ from typer.testing import CliRunner
 from repro_tarfile import __version__ as repro_tarfile_version
 from rptar import __version__ as rptar_version
 from rptar import app
-from tests.utils import assert_archive_contents_equals, dir_tree_factory, file_factory
+from tests.utils import (
+    assert_archive_contents_equals,
+    dir_tree_factory,
+    file_factory,
+    remove_ansi_escape,
+)
 
 runner = CliRunner()
 
@@ -183,4 +188,4 @@ def test_python_dash_m_invocation():
         universal_newlines=True,
     )
     assert result.returncode == 0
-    assert "Usage: python -m rptar" in result.stdout
+    assert "Usage: python -m rptar" in remove_ansi_escape(result.stdout)
