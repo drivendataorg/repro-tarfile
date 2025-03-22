@@ -3,6 +3,7 @@ library module tarfile's nonreproducible output.
 """
 
 import hashlib
+from io import BytesIO
 from pathlib import Path
 import tarfile
 from tempfile import TemporaryDirectory
@@ -17,8 +18,11 @@ def create_archive(tar_module, outfile: Path):
     with tar_module.open(outfile, "w:gz") as tar:
         # Use write to add a file to the archive
         tar.add(example_dir / "data.txt", arcname="data.txt")
-        # Or writestr to write data to the archive
-        tar.addfile(tarfile.TarInfo(name="lore.txt"), fileobj="goodbye")
+        # Or addfile to write data directly to the archive
+        stream = BytesIO("goodbye".encode("utf-8"))
+        tarinfo = repro_tarfile.TarInfo(name="lore.txt")
+        tarinfo.size = stream.getbuffer().nbytes
+        tar.addfile(tarinfo, fileobj=stream)
 
 
 with TemporaryDirectory() as tempdir_name:

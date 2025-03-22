@@ -20,8 +20,12 @@ format:
 
 # Run static typechecking
 typecheck:
-    mypy repro_tarfile.py cli --install-types --non-interactive
-
+    # Standard type checking excluding stub file
+    mypy . --install-types --non-interactive --exclude '\\.pyi$'
+    # Strict type checking on repro_tarfile with stub file
+    mypy repro_tarfile --install-types --non-interactive --strict
+    # Check stub
+    python -m mypy.stubtest repro_tarfile
 # Run tests
 test *args:
     uv run --python {{python}} --no-editable --all-extras --no-dev --group test --isolated \

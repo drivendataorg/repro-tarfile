@@ -3,7 +3,7 @@ import itertools
 import logging
 from pathlib import Path
 import sys
-from typing import List, Optional
+from typing import List, Literal, Optional
 
 if sys.version_info >= (3, 9):
     from typing import Annotated
@@ -25,7 +25,7 @@ logger.addHandler(logging.NullHandler())
 
 def version_callback(value: bool):
     if value:
-        print(f"repro-tarfile v{repro_tarfile.__version__}")
+        print(f"repro-tarfile v{repro_tarfile.__version__}")  # type: ignore[attr-defined]
         print(f"rptar v{__version__}")
         raise typer.Exit()
 
@@ -104,10 +104,11 @@ def rptar(
     if sum((gzip, bzip2, xz)) > 1:
         logger.error("Only one compression option can be used at a time.")
         raise typer.Exit(code=1)
+    write_mode: Literal["w", "w:gz", "w:bz2", "w:xz"]
     try:
         compression = next(itertools.compress(("gz", "bz2", "xz"), (gzip, bzip2, xz)))
         logger.debug("using compression: %s", compression)
-        write_mode = "w:" + compression
+        write_mode = "w:" + compression  # type: ignore[assignment]
     except StopIteration:
         write_mode = "w"
 
