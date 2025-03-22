@@ -160,7 +160,7 @@ class ReproducibleTarFile(TarFile):
         t._extfileobj = False
         return t
 
-    def addfile(self, tarinfo: TarInfo, fileobj: Optional[IO[bytes]] = None) -> None:
+    def addfile(self, tarinfo: TarInfo, fileobj=None) -> None:
         """Add the TarInfo object `tarinfo' to the archive. If `fileobj' is
         given, it should be a binary file, and tarinfo.size bytes are read
         from it and added to the archive. You can create TarInfo objects
