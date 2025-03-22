@@ -1,7 +1,7 @@
 
 [project]
 name = "repro-tarfile"
-dynamic = ["version"]
+version = "0.2.0"
 description = "A tiny, zero-dependency replacement for Python's tarfile standard library for creating reproducible/deterministic tar archives."
 readme = "README.md"
 requires-python = ">=3.8"
@@ -38,9 +38,6 @@ Source = "https://github.com/drivendataorg/repro-tarfile"
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.version]
-path = "repro_tarfile.py"
-
 ## DEV ##
 
 [tool.uv.sources]
@@ -54,6 +51,7 @@ dev = [
   "ipython",
   "vspect",
   { include-group = "lint" },
+  { include-group = "typecheck" },
   { include-group = "test" },
 ]
 lint = [
@@ -98,8 +96,8 @@ omit = ["tests/*"]
 
 [tool.coverage.paths]
 source = [
-  "repro_tarfile.py",
-  "*/site-packages/repro_tarfile.py",
+  "repro_tarfile/",
+  "*/site-packages/repro_tarfile/",
   "cli/rptar.py",
   "*/site-packages/rptar.py",
 ]

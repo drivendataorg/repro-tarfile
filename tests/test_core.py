@@ -6,11 +6,11 @@ from time import sleep
 try:
     from time import tzset
 except ImportError:
-    tzset = None
+    tzset = None  # type: ignore[assignment]
 
 import pytest
 
-from repro_tarfile import ReproducibleTarFile, mtime
+from repro_tarfile import ReproducibleTarFile, mtime  # type: ignore[attr-defined]
 from tests.utils import (
     assert_archive_contents_equals,
     data_factory,

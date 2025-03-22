@@ -5,7 +5,7 @@ import sys
 import pytest
 from typer.testing import CliRunner
 
-from repro_tarfile import __version__ as repro_tarfile_version
+from repro_tarfile import __version__ as repro_tarfile_version  # type: ignore[attr-defined]
 from rptar import __version__ as rptar_version
 from rptar import app
 from tests.utils import (

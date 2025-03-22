@@ -25,7 +25,7 @@ logger.addHandler(logging.NullHandler())
 
 def version_callback(value: bool):
     if value:
-        print(f"repro-tarfile v{repro_tarfile.__version__}")
+        print(f"repro-tarfile v{repro_tarfile.__version__}")  # type: ignore[attr-defined]
         print(f"rptar v{__version__}")
         raise typer.Exit()
 

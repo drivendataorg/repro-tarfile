@@ -2,10 +2,11 @@ import builtins
 import contextlib
 import copy
 import datetime
+from importlib.metadata import version
 import os
 from tarfile import CompressionError, ReadError, TarFile, TarInfo
 
-__version__ = "0.1.0"
+__version__ = version("repro-tarfile")
 
 __all__ = [
     "open",
