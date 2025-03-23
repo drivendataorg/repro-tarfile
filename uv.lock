@@ -791,11 +791,17 @@ wheels = [
 
 [[package]]
 name = "rptar"
+version = "0.1.2"
 source = { editable = "cli" }
 dependencies = [
     { name = "repro-tarfile" },
     { name = "typer" },
     { name = "typing-extensions", marker = "python_full_version < '3.9'" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "vspect" },
 ]
 
 [package.metadata]
@@ -804,6 +810,9 @@ requires-dist = [
     { name = "typer", specifier = ">=0.9.0" },
     { name = "typing-extensions", marker = "python_full_version < '3.9'", specifier = ">=3.9" },
 ]
+
+[package.metadata.requires-dev]
+dev = [{ name = "vspect" }]
 
 [[package]]
 name = "ruff"

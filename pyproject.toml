@@ -95,9 +95,11 @@ source = ["."]
 omit = ["tests/*"]
 
 [tool.coverage.paths]
-source = [
+repro_tarfile = [
   "repro_tarfile/",
-  "*/site-packages/repro_tarfile/",
-  "cli/rptar.py",
-  "*/site-packages/rptar.py",
+  "**/site-packages/repro_tarfile/",
+]
+rptar = [
+  "cli/",
+  "**/site-packages/",
 ]
