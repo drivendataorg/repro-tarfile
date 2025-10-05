@@ -1,7 +1,7 @@
 
 [project]
 name = "repro-tarfile"
-version = "0.2.0"
+version = "0.2.1"
 description = "A tiny, zero-dependency replacement for Python's tarfile standard library for creating reproducible/deterministic tar archives."
 readme = "README.md"
 requires-python = ">=3.8"
