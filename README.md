@@ -99,11 +99,11 @@ with Path("archive.tar.gz").open("wb") as fp:
             # Use write to add a file to the archive
             tarinfo = tar.gettarinfo("examples/data.txt", arcname="data.txt")
             tarinfo.mtime = 315532800
-            tarinfo.mode=0o644
-            tarinfo.uid=0
-            tarinfo.gid=0
-            tarinfo.uname=""
-            tarinfo.gname=""
+            tarinfo.mode = 0o644
+            tarinfo.uid = 0
+            tarinfo.gid = 0
+            tarinfo.uname = ""
+            tarinfo.gname = ""
             with Path("examples/data.txt").open("rb") as fp2:
                 tar.addfile(tarinfo, fp2)
 ```
