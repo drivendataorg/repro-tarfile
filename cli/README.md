@@ -3,7 +3,6 @@
 [![PyPI](https://img.shields.io/pypi/v/rptar.svg)](https://pypi.org/project/rptar/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/rptar)](https://pypi.org/project/rptar/)
 [![tests](https://github.com/drivendataorg/repro-tarfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-tarfile/actions/workflows/tests.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/drivendataorg/repro-tarfile/branch/main/graph/badge.svg)](https://codecov.io/gh/drivendataorg/repro-tarfile)
 
 **A lightweight command-line program for creating reproducible/deterministic tar archives.**
 

@@ -5,7 +5,6 @@
 [![conda-forge feedstock](https://img.shields.io/badge/conda--forge-feedstock-yellowgreen)](https://github.com/conda-forge/repro-tarfile-feedstock)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/repro-tarfile)](https://pypi.org/project/repro-tarfile/)
 [![tests](https://github.com/drivendataorg/repro-tarfile/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/drivendataorg/repro-tarfile/actions/workflows/tests.yml?query=branch%3Amain)
-[![codecov](https://codecov.io/gh/drivendataorg/repro-tarfile/branch/main/graph/badge.svg)](https://codecov.io/gh/drivendataorg/repro-tarfile)
 
 **A tiny, zero-dependency replacement for Python's `tarfile` standard library for creating reproducible/deterministic tar archives.**
 
