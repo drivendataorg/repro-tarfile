@@ -134,7 +134,3 @@ def rptar(
                     logger.info("adding: %s", path)
                     tar.add(path, recursive=False)
             sys.stdout.buffer.write(stream.getvalue())
-
-
-if __name__ == "__main__":
-    app(prog_name="python -m rptar")

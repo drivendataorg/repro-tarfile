@@ -72,7 +72,7 @@ typecheck = [
 
 [tool.ruff]
 line-length = 99
-src = ["*.py", "cli/*.py", "tests/*.py"]
+src = ["src", "cli/src", "tests"]
 
 [tool.ruff.lint]
 select = [
@@ -83,7 +83,6 @@ select = [
 unfixable = ["F"]
 
 [tool.ruff.lint.isort]
-known-first-party = ["repro_tarfile", "rptar"]
 force-sort-within-sections = true
 
 [tool.pytest.ini_options]
@@ -97,10 +96,12 @@ omit = ["tests/*"]
 
 [tool.coverage.paths]
 repro_tarfile = [
-  "repro_tarfile/",
-  "**/site-packages/repro_tarfile/",
+  "src/repro_tarfile/",
+  "*/src/repro_tarfile/",
+  "*/site-packages/repro_tarfile/",
 ]
 rptar = [
-  "cli/",
-  "**/site-packages/",
+  "cli/src/rptar/",
+  "*/cli/src/rptar/",
+  "*/site-packages/rptar/",
 ]
