@@ -24,8 +24,6 @@ def rel_path(tmp_path):
 
 # Minimum versions with extractall filter support. Don't test abs_path if we don't have it.
 EXTRACTALL_FILTER_MIN_VERSIONS = {
-    (3, 8): (3, 8, 17),
-    (3, 9): (3, 9, 17),
     (3, 10): (3, 10, 12),
     (3, 11): (3, 11, 4),
 }
