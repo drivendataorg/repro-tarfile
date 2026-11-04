@@ -469,7 +469,7 @@ dev = [
 lint = [
     { name = "ruff" },
 ]
-test = [
+tests = [
     { name = "coverage" },
     { name = "pytest" },
     { name = "pytest-cases" },
@@ -498,7 +498,7 @@ dev = [
     { name = "vspect" },
 ]
 lint = [{ name = "ruff", specifier = ">=0.1.14" }]
-test = [
+tests = [
     { name = "coverage", specifier = ">=6.5" },
     { name = "pytest", specifier = ">=6,<8" },
     { name = "pytest-cases" },
