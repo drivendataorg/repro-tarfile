@@ -4,6 +4,7 @@
 
 - Removed support for Python 3.8 and 3.9.
 - Added support for Python 3.15.
+- Fixed the type stubs importing `Self` from `typing`, which doesn't have it before Python 3.11. They now import it from `typing_extensions`.
 - Changed the source distribution to contain only the package source, `pyproject.toml`, README, and LICENSE. It previously also included the CLI package, tests, and other repository files. This is a result of changing the build backend from hatchling to uv_build.
 
 ## v0.2.1 (2025-10-05)
