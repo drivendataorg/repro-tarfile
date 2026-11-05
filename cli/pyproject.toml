@@ -43,3 +43,6 @@ build-backend = "hatchling.build"
 dev = [
   "vspect",
 ]
+
+[tool.uv.sources]
+repro-tarfile = { workspace = true }
