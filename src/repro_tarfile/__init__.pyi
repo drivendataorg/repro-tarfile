@@ -2,9 +2,10 @@ from gzip import _ReadableFileobj as _GzipReadableFileobj
 from gzip import _WritableFileobj as _GzipWritableFileobj
 from tarfile import TarFile, _Fileobj
 from tarfile import TarInfo as TarInfo
-from typing import Literal, Mapping, Self, overload
+from typing import Literal, Mapping, overload
 
 from _typeshed import ReadableBuffer, StrOrBytesPath, SupportsRead, WriteableBuffer
+from typing_extensions import Self
 
 __all__ = ["open", "ReproducibleTarFile", "TarInfo"]
 
