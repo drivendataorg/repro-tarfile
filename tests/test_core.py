@@ -1,12 +1,8 @@
 from io import StringIO
 import platform
 from tarfile import TarFile, TarInfo
+import time
 from time import sleep
-
-try:
-    from time import tzset
-except ImportError:
-    tzset = None  # type: ignore[assignment]
 
 import pytest
 
@@ -19,6 +15,8 @@ from tests.utils import (
     hash_file,
     umask,
 )
+
+tzset = getattr(time, "tzset", None)
 
 
 def test_add_dir_tree_mtime(base_path):
