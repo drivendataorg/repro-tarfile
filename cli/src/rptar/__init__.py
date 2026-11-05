@@ -4,12 +4,7 @@ import itertools
 import logging
 from pathlib import Path
 import sys
-from typing import List, Literal, Optional
-
-if sys.version_info >= (3, 9):
-    from typing import Annotated
-else:
-    from typing_extensions import Annotated
+from typing import Annotated, List, Literal, Optional
 
 import typer
 

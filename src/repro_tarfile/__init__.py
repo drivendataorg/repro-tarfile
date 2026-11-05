@@ -194,7 +194,7 @@ class ReproducibleTarFile(TarFile):
                 )
             except AttributeError as e:
                 # Some older versions of Python don't have replace method
-                # Added in: 3.8.17, 3.9.17, 3.10.12, 3.11.4, 3.12
+                # Added in: 3.10.12, 3.11.4, 3.12
                 if "'TarInfo' object has no attribute 'replace'" in str(e):
                     tarinfo_copy = copy.deepcopy(tarinfo)
                     tarinfo_copy.mtime = mtime()
