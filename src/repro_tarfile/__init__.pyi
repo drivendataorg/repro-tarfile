@@ -7,6 +7,7 @@ from typing import Literal, Mapping, overload
 from _typeshed import ReadableBuffer, StrOrBytesPath, SupportsRead, WriteableBuffer
 from typing_extensions import Self
 
+__version__: str
 __all__ = ["open", "ReproducibleTarFile", "TarInfo"]
 
 class ReproducibleTarFile(TarFile):
