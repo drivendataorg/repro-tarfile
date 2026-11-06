@@ -35,12 +35,12 @@ typecheck python=python:
 # Run static typechecking with mypy
 [arg("python", long)]
 typecheck-mypy python=python:
-    # Standard type checking excluding stub file
+    # Standard type checking excluding stub file and stub usage checks
     uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck --group tests -- \
-        mypy . --exclude '\\.pyi$'
-    # Strict type checking on repro_tarfile with stub file
+        mypy . --exclude '(\.pyi|typechecks\.py)$'
+    # Strict type checking on stub file and stub usage checks
     uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck -- \
-        mypy src/repro_tarfile --strict
+        mypy src/repro_tarfile tests/typechecks.py --strict
     # Check stub
     uv run --python={{python}} --isolated --all-extras --no-dev --group typecheck -- \
         python -m mypy.stubtest repro_tarfile
