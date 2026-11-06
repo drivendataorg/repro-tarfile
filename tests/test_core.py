@@ -1,4 +1,4 @@
-from io import StringIO
+from io import BytesIO
 import platform
 from tarfile import TarFile, TarInfo
 import time
@@ -15,8 +15,6 @@ from tests.utils import (
     hash_file,
     umask,
 )
-
-tzset = getattr(time, "tzset", None)
 
 
 def test_add_dir_tree_mtime(base_path):
@@ -190,8 +188,9 @@ def test_add_single_file(base_path):
     assert hash_file(tf_arc1) != hash_file(tf_arc2)
 
 
-@pytest.mark.skipif(tzset is None, reason="tzset not available")
+@pytest.mark.skipif(not hasattr(time, "tzset"), reason="tzset not available")
 def test_mtime_not_affected_by_timezone(monkeypatch):
+    tzset = getattr(time, "tzset")
     monkeypatch.setenv("TZ", "America/Chicago")
     tzset()
     dt1 = mtime()
@@ -530,21 +529,23 @@ def test_add_single_file_arcname(base_path):
 
 def test_addfile(tmp_path):
     """addfile works as expected"""
-    data = data_factory()
+    data = data_factory().encode()
+    tarinfo = TarInfo("data.txt")
+    tarinfo.size = len(data)
 
     rptf_arc1 = tmp_path / "rptf_arc1.tar"
     with ReproducibleTarFile.open(rptf_arc1, "w") as tp:
-        tp.addfile(TarInfo("data.txt"), fileobj=StringIO(data))
+        tp.addfile(tarinfo, fileobj=BytesIO(data))
 
     tf_arc = tmp_path / "tf_arc.tar"
     with TarFile.open(tf_arc, "w") as tp:
-        tp.addfile(TarInfo("data.txt"), fileobj=StringIO(data))
+        tp.addfile(tarinfo, fileobj=BytesIO(data))
 
     sleep(2)
 
     rptf_arc2 = tmp_path / "rptf_arc2.tar"
     with ReproducibleTarFile.open(rptf_arc2, "w") as tp:
-        tp.addfile(TarInfo("data.txt"), fileobj=StringIO(data))
+        tp.addfile(tarinfo, fileobj=BytesIO(data))
 
     # All three archives should have identical content
     assert_archive_contents_equals(rptf_arc1, tf_arc)
