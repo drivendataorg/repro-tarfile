@@ -91,11 +91,6 @@ def rptar(
     logger.debug("xz: %s", xz)
     logger.debug("recursion: %s", recursion)
 
-    # Check create option
-    if not create:
-        logger.error("Only create option is supported. Use `tar` for other operations.")
-        raise typer.Exit(code=1)
-
     # Compression
     if sum((gzip, bzip2, xz)) > 1:
         logger.error("Only one compression option can be used at a time.")
