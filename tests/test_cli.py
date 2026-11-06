@@ -142,6 +142,27 @@ def test_tar_directory_not_recursive(base_path):
     assert_archive_contents_equals(rptar_out, tar_out)
 
 
+def test_without_create(base_path):
+    """Exits with a usage error when the create option is not given."""
+    rptar_out = base_path / "rptar.tar"
+    rptar_args = ["-f", str(rptar_out), str(file_factory(base_path))]
+    rptar_result = runner.invoke(app, rptar_args)
+    assert rptar_result.exit_code == 2, rptar_args
+    assert "Missing option '--create'" in remove_ansi_escape(rptar_result.output)
+    assert not rptar_out.exists()
+
+
+@pytest.mark.parametrize("compression_flags", ["-zj", "-zJ", "-jJ", "-zjJ"])
+def test_multiple_compression_options(base_path, compression_flags):
+    """Exits with an error when more than one compression option is given."""
+    rptar_out = base_path / "rptar.tar"
+    rptar_args = ["-c", compression_flags, "-f", str(rptar_out), str(file_factory(base_path))]
+    rptar_result = runner.invoke(app, rptar_args)
+    assert rptar_result.exit_code == 1, rptar_args
+    assert "Only one compression option can be used at a time" in rptar_result.output
+    assert not rptar_out.exists()
+
+
 def test_verbosity(rel_path):
     """Adjustment of verbosity with -v and -q."""
     data_file = file_factory(rel_path)
