@@ -73,7 +73,7 @@ def open(
     pax_headers: Mapping[str, str] | None = ...,
     debug: int | None = ...,
     errorlevel: int | None = ...,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | None,
@@ -90,7 +90,7 @@ def open(
     pax_headers: Mapping[str, str] | None = ...,
     debug: int | None = ...,
     errorlevel: int | None = ...,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | None = None,
@@ -107,7 +107,7 @@ def open(
     pax_headers: Mapping[str, str] | None = ...,
     debug: int | None = ...,
     errorlevel: int | None = ...,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | None,
@@ -125,7 +125,7 @@ def open(
     debug: int | None = ...,
     errorlevel: int | None = ...,
     compresslevel: int = 9,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | None = None,
@@ -143,7 +143,7 @@ def open(
     debug: int | None = ...,
     errorlevel: int | None = ...,
     compresslevel: int = 9,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | None,
@@ -161,7 +161,7 @@ def open(
     debug: int | None = ...,
     errorlevel: int | None = ...,
     preset: Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9] | None = ...,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | None = None,
@@ -179,7 +179,7 @@ def open(
     debug: int | None = ...,
     errorlevel: int | None = ...,
     preset: Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9] | None = ...,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | ReadableBuffer | None = None,
@@ -196,7 +196,7 @@ def open(
     pax_headers: Mapping[str, str] | None = ...,
     debug: int | None = ...,
     errorlevel: int | None = ...,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | WriteableBuffer | None = None,
@@ -213,7 +213,7 @@ def open(
     pax_headers: Mapping[str, str] | None = ...,
     debug: int | None = ...,
     errorlevel: int | None = ...,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
 @overload
 def open(
     name: StrOrBytesPath | WriteableBuffer | None = None,
@@ -231,4 +231,4 @@ def open(
     debug: int | None = ...,
     errorlevel: int | None = ...,
     compresslevel: int = 9,
-) -> TarFile: ...
+) -> ReproducibleTarFile: ...
