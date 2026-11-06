@@ -167,7 +167,7 @@ class ReproducibleTarFile(TarFile):
         except:
             fileobj.close()
             raise
-        t._extfileobj = False
+        t._extfileobj = False  # type: ignore[attr-defined]
         return t
 
     def addfile(self, tarinfo: TarInfo, fileobj=None) -> None:
