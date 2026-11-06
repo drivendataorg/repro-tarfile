@@ -1,6 +1,6 @@
 from io import BytesIO
 import platform
-from tarfile import TarFile, TarInfo
+from tarfile import ReadError, TarFile, TarInfo
 import time
 from time import sleep
 
@@ -234,6 +234,75 @@ def test_add_single_file_gz(base_path):
     # ReproducibleTarFile hashes should match; TarFile hashes should not
     assert hash_file(rptf_arc1) == hash_file(rptf_arc2)
     assert hash_file(tf_arc1) != hash_file(tf_arc2)
+
+
+def test_add_single_file_gz_fileobj(base_path):
+    """Writing the same file with different mtime to a file object produces the same bytes with
+    gzip compression."""
+    data_file = file_factory(base_path)
+
+    rptf_buf1 = BytesIO()
+    with ReproducibleTarFile.open(fileobj=rptf_buf1, mode="w:gz") as tp:
+        tp.add(data_file, arcname=data_file.name)
+
+    sleep(2)
+    data_file.touch()
+
+    rptf_buf2 = BytesIO()
+    with ReproducibleTarFile.open(fileobj=rptf_buf2, mode="w:gz") as tp:
+        tp.add(data_file, arcname=data_file.name)
+
+    assert rptf_buf1.getvalue() == rptf_buf2.getvalue()
+
+    rptf_buf1.seek(0)
+    with TarFile.open(fileobj=rptf_buf1, mode="r:gz") as tp:
+        assert tp.getnames() == [data_file.name]
+
+
+def test_open_read_uncompressed(tmp_path):
+    """Opening with the default mode reads an uncompressed archive."""
+    data_file = file_factory(tmp_path)
+    arc_path = tmp_path / "arc.tar"
+    with TarFile.open(arc_path, "w") as tp:
+        tp.add(data_file, arcname=data_file.name)
+
+    with ReproducibleTarFile.open(arc_path) as tp:
+        assert tp.getnames() == [data_file.name]
+
+
+def test_gzopen_not_gzip(tmp_path):
+    """Opening an uncompressed archive in gzip read mode raises ReadError."""
+    data_file = file_factory(tmp_path)
+    arc_path = tmp_path / "arc.tar"
+    with TarFile.open(arc_path, "w") as tp:
+        tp.add(data_file, arcname=data_file.name)
+
+    with pytest.raises(ReadError, match="not a gzip file"):
+        ReproducibleTarFile.open(arc_path, "r:gz")
+
+
+def test_gzopen_truncated(tmp_path):
+    """Opening a truncated gzip archive raises EOFError."""
+    data_file = file_factory(tmp_path)
+    arc_path = tmp_path / "arc.tar.gz"
+    with ReproducibleTarFile.open(arc_path, "w:gz") as tp:
+        tp.add(data_file, arcname=data_file.name)
+    arc_path.write_bytes(arc_path.read_bytes()[:20])
+
+    with pytest.raises(EOFError):
+        ReproducibleTarFile.open(arc_path, "r:gz")
+
+
+def test_gzopen_append_mode(tmp_path):
+    """Opening a gzip archive in append mode raises ValueError."""
+    with pytest.raises(ValueError, match="mode must be 'r', 'w' or 'x'"):
+        ReproducibleTarFile.open(tmp_path / "arc.tar.gz", "a:gz")  # type: ignore[call-overload]
+
+
+def test_gzopen_missing_parent_dir(tmp_path):
+    """Writing a gzip archive into a nonexistent directory raises FileNotFoundError."""
+    with pytest.raises(FileNotFoundError):
+        ReproducibleTarFile.open(tmp_path / "missing" / "arc.tar.gz", "w:gz")
 
 
 def test_add_single_file_bz2(base_path):

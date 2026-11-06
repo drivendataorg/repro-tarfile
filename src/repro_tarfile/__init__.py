@@ -142,7 +142,7 @@ class ReproducibleTarFile(TarFile):
 
         try:
             from gzip import GzipFile
-        except ImportError:
+        except ImportError:  # pragma: no cover
             raise CompressionError("gzip module is not available") from None
 
         try:
@@ -153,7 +153,7 @@ class ReproducibleTarFile(TarFile):
             fileobj = GzipFile("", mode + "b", compresslevel, fileobj, mtime=mtime())
             #########################
         except OSError as e:
-            if fileobj is not None and mode == "r":
+            if fileobj is not None and mode == "r":  # pragma: no cover
                 raise ReadError("not a gzip file") from e
             raise
 
@@ -163,7 +163,7 @@ class ReproducibleTarFile(TarFile):
             fileobj.close()
             if mode == "r":
                 raise ReadError("not a gzip file") from e
-            raise
+            raise  # pragma: no cover
         except:
             fileobj.close()
             raise
@@ -203,7 +203,7 @@ class ReproducibleTarFile(TarFile):
                     tarinfo_copy.gid = gid()
                     tarinfo_copy.uname = uname()
                     tarinfo_copy.gname = gname()
-                else:
+                else:  # pragma: no cover
                     raise
         return super().addfile(tarinfo=tarinfo_copy, fileobj=fileobj)
 
