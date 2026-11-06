@@ -1,5 +1,4 @@
 from io import BytesIO
-from tarfile import TarFile
 
 from typing_extensions import assert_type
 
@@ -9,10 +8,10 @@ from repro_tarfile import ReproducibleTarFile, TarInfo
 assert_type(repro_tarfile.__version__, str)
 
 # open
-assert_type(repro_tarfile.open("archive.tar"), TarFile)
-assert_type(repro_tarfile.open("archive.tar", "w"), TarFile)
-assert_type(repro_tarfile.open("archive.tar.gz", "w:gz", compresslevel=6), TarFile)
-assert_type(repro_tarfile.open("archive.tar.xz", "w:xz", preset=6), TarFile)
+assert_type(repro_tarfile.open("archive.tar"), ReproducibleTarFile)
+assert_type(repro_tarfile.open("archive.tar", "w"), ReproducibleTarFile)
+assert_type(repro_tarfile.open("archive.tar.gz", "w:gz", compresslevel=6), ReproducibleTarFile)
+assert_type(repro_tarfile.open("archive.tar.xz", "w:xz", preset=6), ReproducibleTarFile)
 assert_type(ReproducibleTarFile.open("archive.tar", "w"), ReproducibleTarFile)
 
 # gzopen
